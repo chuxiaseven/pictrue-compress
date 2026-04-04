@@ -1,0 +1,44 @@
+{
+  "name": "pictrue-compress",
+  "private": true,
+  "version": "1.0.0",
+  "description": "图片压缩工具",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\"",
+    "build": "cd frontend && npm run build && cd ../backend && npm run build",
+    "electron:dev": "npm run build && electron .",
+    "electron:build": "npm run build && electron-builder",
+    "start": "npm run electron:dev"
+  },
+  "build": {
+    "appId": "com.pictruecompress.app",
+    "productName": "图片压缩工具",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*",
+      "backend/dist/**/*",
+      "backend/package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "devDependencies": {
+    "electron": "^41.1.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron"
+    ]
+  }
+}

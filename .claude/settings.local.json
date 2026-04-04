@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"node_modules/electron/dist/electron.exe\" .)",
+      "Bash(tasklist)",
+      "Bash(cmd.exe /c \"tasklist | findstr /i electron\")",
+      "Bash(cmd.exe /c \"tasklist\")",
+      "Bash(powershell.exe -Command \"Start-Process 'D:\\\\Users\\\\moe\\\\git-code\\\\pictrue-compress\\\\node_modules\\\\electron\\\\dist\\\\electron.exe' -ArgumentList 'D:\\\\Users\\\\moe\\\\git-code\\\\pictrue-compress' -WorkingDirectory 'D:\\\\Users\\\\moe\\\\git-code\\\\pictrue-compress'\")",
+      "Bash(npx vite:*)"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "general": {
+    "defaultQuality": 75,
+    "defaultPath": "",
+    "autoOpenFolder": true,
+    "autoCheckUpdate": false
+  },
+  "theme": {
+    "themeMode": "system"
+  },
+  "language": {
+    "language": "zh-CN"
+  }
+}
