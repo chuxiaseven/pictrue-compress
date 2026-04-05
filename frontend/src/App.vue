@@ -5,7 +5,6 @@
       <nav class="app-nav">
         <router-link to="/" class="nav-link">首页</router-link>
         <router-link to="/history" class="nav-link">历史记录</router-link>
-        <el-button type="text" class="settings-btn" @click="showSettingsDialog = true">设置</el-button>
       </nav>
     </header>
     <main class="app-main">
@@ -14,24 +13,11 @@
     <footer class="app-footer">
       <p>© 2026 图片压缩工具</p>
     </footer>
-    
-    <!-- 设置弹窗 -->
-    <el-dialog
-      v-model="showSettingsDialog"
-      title="设置"
-      width="800px"
-      append-to-body
-    >
-      <Settings />
-    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Settings from './views/Settings.vue'
-
-const showSettingsDialog = ref(false)
 </script>
 
 <style scoped>
@@ -79,17 +65,6 @@ const showSettingsDialog = ref(false)
 .nav-link.router-link-active {
   background-color: rgba(255, 255, 255, 0.2);
   font-weight: bold;
-}
-
-.settings-btn {
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
-}
-
-.settings-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .app-main {
