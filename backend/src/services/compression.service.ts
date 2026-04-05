@@ -107,7 +107,7 @@ const compressionService = {
       
       const result = {
         id: compressedId,
-        fileName: originalName,
+        originalName: originalName,
         originalSize: originalStats.size,
         compressedSize: compressedStats.size,
         compressionRatio: compressedStats.size / originalStats.size,

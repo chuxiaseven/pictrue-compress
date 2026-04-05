@@ -11,7 +11,7 @@ export const useUploadStore = defineStore('upload', () => {
   const addFiles = (newFiles: File[]) => {
     newFiles.forEach(file => {
       if (!file.type.startsWith('image/')) return
-      
+
       const reader = new FileReader()
       reader.onload = (e) => {
         files.value.push({
@@ -63,7 +63,7 @@ export const useUploadStore = defineStore('upload', () => {
   const uploadAll = async () => {
     isUploading.value = true
     const pendingFiles = files.value.filter(f => f.status === 'pending')
-    
+
     try {
       await Promise.all(pendingFiles.map(f => uploadFile(f.id)))
     } finally {
@@ -131,20 +131,16 @@ export const useCompressionStore = defineStore('compression', () => {
     }
 
     try {
-      console.log('Starting batch compression with file IDs:', fileIds)
       const response = await compressionApi.batchCompress(fileIds, settings.value)
-      console.log('Compression response:', response)
       // 从后端返回的结果中提取成功的压缩结果
       const successfulResults = response.data.results
         .filter((item: any) => item.success)
         .map((item: any) => item.result)
-      console.log('Successful results:', successfulResults)
       results.value = [...results.value, ...successfulResults]
       progress.value.status = 'completed'
       progress.value.percentage = 100
       return response.data
     } catch (error) {
-      console.error('Compression error:', error)
       progress.value.status = 'error'
       throw error
     }

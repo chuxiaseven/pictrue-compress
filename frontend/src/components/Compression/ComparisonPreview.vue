@@ -41,7 +41,7 @@
           @mouseleave="stopDrag"
         >
           <img 
-            :src="originalUrl || fallbackOriginalUrl.value" 
+            :src="originalUrl || fallbackOriginalUrl" 
             alt="原始图片" 
             class="preview-image"
             :style="{
@@ -71,7 +71,7 @@
           @mouseleave="stopDrag"
         >
           <img 
-            :src="compressedUrl || fallbackCompressedUrl.value" 
+            :src="compressedUrl || fallbackCompressedUrl" 
             alt="压缩后图片" 
             class="preview-image"
             :style="{
@@ -92,9 +92,9 @@
       <div class="slider-container">
         <div class="slider-wrapper" @mousemove="handleSliderMove" @touchmove="handleSliderMove">
           <div class="slider-content" :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }">
-            <img :src="originalUrl || fallbackOriginalUrl.value" alt="原始图片" class="slider-image" @error="handleImageError('original')" />
+            <img :src="originalUrl || fallbackOriginalUrl" alt="原始图片" class="slider-image" @error="handleImageError('original')" />
           </div>
-          <img :src="compressedUrl || fallbackCompressedUrl.value" alt="压缩后图片" class="slider-image" @error="handleImageError('compressed')" />
+          <img :src="compressedUrl || fallbackCompressedUrl" alt="压缩后图片" class="slider-image" @error="handleImageError('compressed')" />
           <div class="slider-handle" :style="{ left: `${sliderPosition}%` }">
             <div class="slider-line"></div>
             <div class="slider-dot"></div>
@@ -112,7 +112,7 @@
       <div class="switch-container">
         <div class="image-wrapper">
           <img 
-            :src="currentImage === 'original' ? (originalUrl || fallbackOriginalUrl.value) : (compressedUrl || fallbackCompressedUrl.value)" 
+            :src="currentImage === 'original' ? (originalUrl || fallbackOriginalUrl) : (compressedUrl || fallbackCompressedUrl)" 
             alt="预览图片" 
             class="preview-image"
             @click="toggleImage"
@@ -166,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   originalUrl: {
@@ -200,11 +200,6 @@ const mode = ref('side-by-side')
 
 // 切换对比状态
 const currentImage = ref('original')
-const currentImageUrl = computed(() => {
-  return currentImage.value === 'original' 
-    ? (props.originalUrl || fallbackOriginalUrl.value) 
-    : (props.compressedUrl || fallbackCompressedUrl.value)
-})
 
 // 滑块对比状态
 const sliderPosition = ref(50)

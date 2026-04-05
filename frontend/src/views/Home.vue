@@ -272,14 +272,12 @@ const handleDownloadResults = () => {
   if (compressionStore.results.length === 1) {
     // 单张下载
     const result = compressionStore.results[0]
-    compressionStore.downloadFile(result.id, `${result.originalName?.replace(/\.[^/.]+$/, '')}_compressed.${result.downloadUrl.split('.').pop()}`)
+    compressionStore.downloadFile(result.id, getDownloadFileName(result))
   } else {
     // 批量下载
     const ids = compressionStore.results.map(r => r.id)
     compressionStore.downloadBatch(ids, `compressed_images_${Date.now()}.zip`)
   }
-
-  ElMessage.success('开始下载...')
 }
 
 // 处理清除结果
@@ -296,8 +294,18 @@ const selectResult = (result: CompressionResult) => {
 
 // 下载单个结果
 const downloadSingleResult = (result: CompressionResult) => {
-  compressionStore.downloadFile(result.id, `${result.originalName?.replace(/\.[^/.]+$/, '')}_compressed.${result.downloadUrl.split('.').pop()}`)
-  ElMessage.success('开始下载...')
+  compressionStore.downloadFile(result.id, getDownloadFileName(result))
+}
+
+// 获取下载文件名
+const getDownloadFileName = (result: CompressionResult): string => {
+  // 从 previewUrl 中获取文件扩展名
+  const fileNameFromPreview = result.previewUrl.split('/').pop()
+  const extension = fileNameFromPreview ? fileNameFromPreview.split('.').pop() : 'jpg'
+  
+  // 生成文件名
+  const baseName = result.originalName ? result.originalName.replace(/\.[^/.]+$/, '') : 'image'
+  return `${baseName}_compressed.${extension}`
 }
 
 // 保存压缩设置

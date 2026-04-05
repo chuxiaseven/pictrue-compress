@@ -24,17 +24,23 @@
       "backend/package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": "dir",
+      "signAndEditExecutable": false
     },
     "mac": {
       "target": "dmg"
     },
     "linux": {
       "target": "AppImage"
+    },
+    "publish": {
+      "provider": "generic",
+      "url": "http://localhost:3000/"
     }
   },
   "devDependencies": {
-    "electron": "^41.1.1"
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
