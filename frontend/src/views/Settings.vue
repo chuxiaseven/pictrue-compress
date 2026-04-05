@@ -61,10 +61,8 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { useSettingsStore } from '../store'
 
-// Store 实例
-const settingsStore = useSettingsStore()
+
 
 // 设置数据
 const settings = reactive({

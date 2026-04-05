@@ -43,6 +43,8 @@ export interface HistoryRecord {
   mode: string
   timestamp: number
   format: string
+  downloadUrl?: string
+  previewUrl?: string
 }
 
 // 应用设置类型
