@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import routes from './routes'
-import errorMiddleware from './middleware/error'
+import routes from './routes/index.js'
+import errorMiddleware from './middleware/error.js'
 import path from 'path'
 import fs from 'fs/promises'
 

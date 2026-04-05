@@ -64,57 +64,10 @@
       :close-on-click-modal="false"
       :body-style="{ maxHeight: '500px', overflowY: 'auto' }"
     >
-      <!-- 文件存储设置 -->
-      <div class="settings-section">
-        <h3>文件存储设置</h3>
-        
-        <!-- 压缩文件存放目录 -->
-        <div class="setting-item">
-          <label class="setting-label">压缩文件存放目录：</label>
-          <div class="setting-content">
-            <el-input v-model="storageSettings.general.compressedPath" style="flex: 1; margin-right: 10px" />
-            <el-button type="primary" @click="selectCompressedFolder">选择文件夹</el-button>
-          </div>
-          <div v-if="storageSettings.general.compressedPath" class="setting-hint">
-            已选择压缩文件存放目录: {{ storageSettings.general.compressedPath }}
-          </div>
-          <div v-if="compressedFolderUpdated" class="setting-success">
-            ✓ 已选择压缩文件存放目录并更新设置
-          </div>
-        </div>
-
-        <!-- 下载文件目录 -->
-        <div class="setting-item">
-          <label class="setting-label">下载文件目录：</label>
-          <div class="setting-content">
-            <el-input v-model="storageSettings.general.downloadPath" style="flex: 1; margin-right: 10px" />
-            <el-button type="primary" @click="selectDownloadFolder">选择文件夹</el-button>
-          </div>
-          <div v-if="storageSettings.general.downloadPath" class="setting-hint">
-            已选择下载文件目录: {{ storageSettings.general.downloadPath }}
-          </div>
-          <div v-if="downloadFolderUpdated" class="setting-success">
-            ✓ 已选择下载文件目录并更新设置
-          </div>
-        </div>
-
-        <!-- 文件命名规则 -->
-        <div class="setting-item">
-          <label class="setting-label">文件命名规则：</label>
-          <div class="setting-content">
-            <el-radio-group v-model="storageSettings.general.namingRule">
-              <el-radio label="original">使用原文件名</el-radio>
-              <el-radio label="add_suffix">添加 _compressed 后缀</el-radio>
-            </el-radio-group>
-          </div>
-        </div>
-      </div>
-
+      <Settings />
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="showStorageSettings = false">取消</el-button>
-          <el-button @click="restoreDefaults">恢复默认值</el-button>
-          <el-button type="primary" @click="saveStorageSettings">保存</el-button>
         </span>
       </template>
     </el-dialog>
@@ -164,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 
 // 组件导入
@@ -174,6 +127,7 @@ import ActionButtons from '../components/common/ActionButtons.vue'
 import StatusBar from '../components/common/StatusBar.vue'
 import ComparisonPreview from '../components/Compression/ComparisonPreview.vue'
 import CompressionSettings from '../components/Compression/CompressionSettings.vue'
+import Settings from './Settings.vue'
 
 // Store 导入
 import { useUploadStore, useCompressionStore, useSettingsStore } from '../store'
@@ -201,18 +155,7 @@ const compressionSettings = ref<CompressionSettingsType>({
   stripMetadata: true
 })
 
-// 存储设置数据
-const storageSettings = reactive({
-  general: {
-    compressedPath: '',
-    downloadPath: '',
-    namingRule: 'original' as 'original' | 'add_suffix'
-  }
-})
 
-// 存储设置状态消息
-const compressedFolderUpdated = ref(false)
-const downloadFolderUpdated = ref(false)
 
 // 计算属性
 const canCompress = computed(() => {
@@ -390,41 +333,7 @@ const formatSize = (bytes: number | undefined): string => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-// 选择压缩文件存放目录
-const selectCompressedFolder = () => {
-  // 这里实现文件夹选择逻辑
-  storageSettings.general.compressedPath = '/Users/username/Downloads/压缩'
-  compressedFolderUpdated.value = true
-  setTimeout(() => {
-    compressedFolderUpdated.value = false
-  }, 2000)
-}
 
-// 选择下载文件目录
-const selectDownloadFolder = () => {
-  // 这里实现文件夹选择逻辑
-  storageSettings.general.downloadPath = '/Users/username/Downloads/下载'
-  downloadFolderUpdated.value = true
-  setTimeout(() => {
-    downloadFolderUpdated.value = false
-  }, 2000)
-}
-
-// 恢复默认值
-const restoreDefaults = () => {
-  storageSettings.general.compressedPath = ''
-  storageSettings.general.downloadPath = ''
-  storageSettings.general.namingRule = 'original'
-}
-
-// 保存存储设置
-const saveStorageSettings = () => {
-  // 这里实现保存设置逻辑
-  console.log('保存存储设置:', storageSettings)
-  // 模拟保存成功
-  ElMessage.success('存储设置已保存')
-  showStorageSettings.value = false
-}
 </script>
 
 <style scoped>
@@ -551,52 +460,5 @@ const saveStorageSettings = () => {
   border-color: #40a9ff;
 }
 
-/* 存储设置弹窗样式 */
-.settings-section {
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  padding: 20px;
-  margin-bottom: 24px;
-}
 
-.settings-section h3 {
-  margin: 0 0 20px 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #303133;
-}
-
-.setting-item {
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.setting-label {
-  width: 150px;
-  font-size: 14px;
-  color: #606266;
-  line-height: 32px;
-}
-
-.setting-content {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.setting-hint {
-  margin-left: 150px;
-  font-size: 13px;
-  color: #909399;
-}
-
-.setting-success {
-  margin-left: 150px;
-  font-size: 13px;
-  color: #67c23a;
-}
 </style>

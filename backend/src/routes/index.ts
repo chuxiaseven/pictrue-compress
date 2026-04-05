@@ -1,8 +1,8 @@
 import express from 'express'
-import uploadRoutes from './upload.route'
-import compressionRoutes from './compression.route'
-import historyRoutes from './history.route'
-import settingsRoutes from './settings.route'
+import uploadRoutes from './upload.route.js'
+import compressionRoutes from './compression.route.js'
+import historyRoutes from './history.route.js'
+import settingsRoutes from './settings.route.js'
 
 const router = express.Router()
 

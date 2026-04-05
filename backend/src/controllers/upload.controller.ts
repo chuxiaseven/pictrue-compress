@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import uploadService from '../services/upload.service'
+import uploadService from '../services/upload.service.js'
 
 const uploadController = {
   async upload(req: Request, res: Response) {

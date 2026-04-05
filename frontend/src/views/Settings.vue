@@ -89,32 +89,34 @@ const downloadFolderUpdated = ref(false)
 // 选择压缩文件存放目录
 const selectCompressedFolder = async () => {
   try {
+    if (!window.electronAPI) {
+      throw new Error('请在 Electron 环境中运行应用以使用此功能')
+    }
     const folderPath = await window.electronAPI.selectFolder()
     if (folderPath) {
       settings.general.compressedPath = folderPath
       compressedFolderUpdated.value = true
-      setTimeout(() => {
-        compressedFolderUpdated.value = false
-      }, 2000)
     }
   } catch (error) {
     console.error('选择文件夹失败:', error)
+    alert('选择文件夹失败: ' + (error instanceof Error ? error.message : String(error)))
   }
 }
 
 // 选择下载文件目录
 const selectDownloadFolder = async () => {
   try {
+    if (!window.electronAPI) {
+      throw new Error('请在 Electron 环境中运行应用以使用此功能')
+    }
     const folderPath = await window.electronAPI.selectFolder()
     if (folderPath) {
       settings.general.downloadPath = folderPath
       downloadFolderUpdated.value = true
-      setTimeout(() => {
-        downloadFolderUpdated.value = false
-      }, 2000)
     }
   } catch (error) {
     console.error('选择文件夹失败:', error)
+    alert('选择文件夹失败: ' + (error instanceof Error ? error.message : String(error)))
   }
 }
 

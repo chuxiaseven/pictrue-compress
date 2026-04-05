@@ -1,5 +1,5 @@
 import express from 'express'
-import compressionController from '../controllers/compression.controller'
+import compressionController from '../controllers/compression.controller.js'
 
 const router = express.Router()
 

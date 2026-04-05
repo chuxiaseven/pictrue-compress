@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import compressionService from '../services/compression.service'
+import compressionService from '../services/compression.service.js'
 
 const compressionController = {
   async compress(req: Request, res: Response) {

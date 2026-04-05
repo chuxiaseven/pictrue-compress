@@ -2,7 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import sharp from 'sharp'
 import { v4 as uuidv4 } from 'uuid'
-import historyService from './history.service'
+import historyService from './history.service.js'
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
 const COMPRESSED_DIR = path.join(UPLOAD_DIR, 'compressed')
