@@ -65,11 +65,6 @@
       :body-style="{ maxHeight: '500px', overflowY: 'auto' }"
     >
       <Settings />
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="showStorageSettings = false">取消</el-button>
-        </span>
-      </template>
     </el-dialog>
 
     <!-- 压缩结果列表 -->

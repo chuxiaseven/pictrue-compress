@@ -2,11 +2,9 @@
   <div class="settings-container">
     <!-- 设置内容 -->
     <div class="settings-content">
-      <h2>设置</h2>
       
       <!-- 文件存储设置 -->
       <div class="settings-section">
-        <h3>文件存储设置</h3>
         
         <!-- 压缩文件存放目录 -->
         <div class="setting-item">
