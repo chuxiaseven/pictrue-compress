@@ -41,6 +41,7 @@
       width="600px"
       append-to-body
       :close-on-click-modal="false"
+      :body-style="{ maxHeight: '500px', overflowY: 'auto' }"
     >
       <CompressionSettings 
         v-model="compressionSettings" 
@@ -61,6 +62,7 @@
       width="600px"
       append-to-body
       :close-on-click-modal="false"
+      :body-style="{ maxHeight: '500px', overflowY: 'auto' }"
     >
       <!-- 文件存储设置 -->
       <div class="settings-section">

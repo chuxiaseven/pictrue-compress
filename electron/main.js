@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -86,4 +86,36 @@ ipcMain.handle('get-app-path', () => {
 
 ipcMain.handle('get-user-data-path', () => {
   return app.getPath('userData');
+});
+
+ipcMain.handle('select-folder', async () => {
+  const focusedWindow = BrowserWindow.getFocusedWindow() || mainWindow;
+  if (!focusedWindow) {
+    // 如果没有窗口，创建一个临时窗口作为对话框的父窗口
+    const tempWindow = new BrowserWindow({ 
+      show: false 
+    });
+    const result = await dialog.showOpenDialog(tempWindow, {
+      properties: ['openDirectory'],
+      title: '选择文件夹',
+      buttonLabel: '选择'
+    });
+    tempWindow.close();
+    
+    if (!result.canceled && result.filePaths.length > 0) {
+      return result.filePaths[0];
+    }
+    return null;
+  }
+  
+  const result = await dialog.showOpenDialog(focusedWindow, {
+    properties: ['openDirectory'],
+    title: '选择文件夹',
+    buttonLabel: '选择'
+  });
+  
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0];
+  }
+  return null;
 });

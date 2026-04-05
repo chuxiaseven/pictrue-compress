@@ -16,7 +16,7 @@
           <el-option label="WebP" value="webp" />
           <el-option label="全部" value="all" />
         </el-select>
-        <el-button type="info" @click="refreshHistory">刷新</el-button>
+        <el-button type="primary" @click="refreshHistory">刷新</el-button>
         <el-button type="danger" style="margin-left: 8px" @click="clearAll">清空历史记录</el-button>
       </div>
     </div>
@@ -308,25 +308,44 @@ const handleCurrentChange = (current: number) => {
 }
 
 .pagination-section {
-  margin-top: 20px;
+  margin-top: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid #e4e7ed;
 }
 
 .pagination-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 800px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+:deep(.el-pagination .el-pagination__sizes) {
+  min-width: auto;
+  margin-left: 0;
+}
+
+:deep(.el-pagination .el-pagination__sizes .el-select .el-input__inner) {
+  font-size: 12px;
+  padding: 0 8px;
+  height: 28px;
+}
+
+:deep(.el-pagination .el-pagination__sizes .el-select .el-input__suffix) {
+  height: 28px;
+  line-height: 28px;
 }
 
 .record-count {
   font-size: 14px;
   color: #606266;
+  white-space: nowrap;
 }
 
 .file-actions {

@@ -20,11 +20,53 @@
 
 </script>
 
+<style>
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden !important;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+#app {
+  height: 100vh;
+  overflow: hidden !important;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* 禁用滚动条 */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
+
 <style scoped>
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100vh;
   font-family: Arial, sans-serif;
 }
 
@@ -71,6 +113,7 @@
   flex: 1;
   padding: 20px;
   background-color: #f5f7fa;
+  overflow: hidden;
 }
 
 .app-footer {
