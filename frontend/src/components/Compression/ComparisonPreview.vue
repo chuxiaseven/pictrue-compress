@@ -41,13 +41,14 @@
           @mouseleave="stopDrag"
         >
           <img 
-            :src="originalUrl" 
+            :src="originalUrl || fallbackOriginalUrl.value" 
             alt="原始图片" 
             class="preview-image"
             :style="{
               transform: `scale(${zoomLevel}) translate(${dragX}px, ${dragY}px)`,
               transformOrigin: 'center center'
             }"
+            @error="handleImageError('original')"
           />
         </div>
         <div class="image-footer">
@@ -70,13 +71,14 @@
           @mouseleave="stopDrag"
         >
           <img 
-            :src="compressedUrl" 
+            :src="compressedUrl || fallbackCompressedUrl.value" 
             alt="压缩后图片" 
             class="preview-image"
             :style="{
               transform: `scale(${zoomLevel}) translate(${dragX}px, ${dragY}px)`,
               transformOrigin: 'center center'
             }"
+            @error="handleImageError('compressed')"
           />
         </div>
         <div class="image-footer">
@@ -90,9 +92,9 @@
       <div class="slider-container">
         <div class="slider-wrapper" @mousemove="handleSliderMove" @touchmove="handleSliderMove">
           <div class="slider-content" :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }">
-            <img :src="originalUrl" alt="原始图片" class="slider-image" />
+            <img :src="originalUrl || fallbackOriginalUrl.value" alt="原始图片" class="slider-image" @error="handleImageError('original')" />
           </div>
-          <img :src="compressedUrl" alt="压缩后图片" class="slider-image" />
+          <img :src="compressedUrl || fallbackCompressedUrl.value" alt="压缩后图片" class="slider-image" @error="handleImageError('compressed')" />
           <div class="slider-handle" :style="{ left: `${sliderPosition}%` }">
             <div class="slider-line"></div>
             <div class="slider-dot"></div>
@@ -110,10 +112,11 @@
       <div class="switch-container">
         <div class="image-wrapper">
           <img 
-            :src="currentImageUrl" 
+            :src="currentImage === 'original' ? (originalUrl || fallbackOriginalUrl.value) : (compressedUrl || fallbackCompressedUrl.value)" 
             alt="预览图片" 
             class="preview-image"
             @click="toggleImage"
+            @error="handleImageError(currentImage as 'original' | 'compressed')"
           />
           <div class="switch-overlay" @click="toggleImage">
             <div class="switch-text">{{ currentImage === 'original' ? '点击查看压缩后' : '点击查看原始' }}</div>
@@ -198,7 +201,9 @@ const mode = ref('side-by-side')
 // 切换对比状态
 const currentImage = ref('original')
 const currentImageUrl = computed(() => {
-  return currentImage.value === 'original' ? props.originalUrl : props.compressedUrl
+  return currentImage.value === 'original' 
+    ? (props.originalUrl || fallbackOriginalUrl.value) 
+    : (props.compressedUrl || fallbackCompressedUrl.value)
 })
 
 // 滑块对比状态
@@ -218,6 +223,19 @@ const originalHeight = ref(0)
 const compressedWidth = ref(0)
 const compressedHeight = ref(0)
 
+// 备用图片URL（当加载失败时使用）
+const fallbackOriginalUrl = ref('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjQjBCMEIwIj7kuLvluqfliLDliqHpg73kuIDkuK3nqLygkNeQkQo8L3RleHQ+Cjwvc3ZnPg==')
+const fallbackCompressedUrl = ref('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjQjBCMEIwIj7kuLvluqfliLDliqHpg73kuIDkuK3nqLygkNeQkQo8L3RleHQ+Cjwvc3ZnPg==')
+
+// 处理图片加载失败
+const handleImageError = (type: 'original' | 'compressed') => {
+  if (type === 'original') {
+    fallbackOriginalUrl.value = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjQjBCMEIwIj7kuLvluqfliLDliqHpg73kuIDkuK3nqLygkNeQkQo8L3RleHQ+Cjwvc3ZnPg=='
+  } else {
+    fallbackCompressedUrl.value = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjQjBCMEIwIj7kuLvluqfliLDliqHpg73kuIDkuK3nqLygkNeQkQo8L3RleHQ+Cjwvc3ZnPg=='
+  }
+}
+
 // 格式化文件大小
 const formatSize = (bytes: number | undefined): string => {
   if (!bytes || bytes === 0) return '0 B'
@@ -229,6 +247,7 @@ const formatSize = (bytes: number | undefined): string => {
 
 // 获取文件扩展名
 const getFileExtension = (fileName: string): string => {
+  if (!fileName) return '未知'
   return fileName.split('.').pop()?.toUpperCase() || '未知'
 }
 

@@ -24,7 +24,7 @@ export interface CompressionSettings {
 // 压缩结果类型
 export interface CompressionResult {
   id: string
-  originalName: string
+  originalName?: string
   originalSize: number
   compressedSize: number
   compressionRatio: number

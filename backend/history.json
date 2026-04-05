@@ -10,5 +10,53 @@
     "previewUrl": "/uploads/compressed/0c15b14c-528f-427b-954a-433e514a0a3d_compressed_49febe3cf0a9eac17040ba0b21648449cbe4da0e2e21c-CuCx4u_fw1200.png",
     "id": "1775363300785",
     "timestamp": "2026-04-05T04:28:20.785Z"
+  },
+  {
+    "fileName": "1.webp",
+    "originalSize": 67412,
+    "compressedSize": 34936,
+    "compressionRatio": 0.5182460096125319,
+    "format": "original",
+    "quality": 75,
+    "downloadUrl": "/api/download/cc5e2571-35e0-4a0c-959d-54b837e8e01d",
+    "previewUrl": "/uploads/compressed/cc5e2571-35e0-4a0c-959d-54b837e8e01d_compressed_1.webp",
+    "id": "1775380980059",
+    "timestamp": "2026-04-05T09:23:00.059Z"
+  },
+  {
+    "fileName": "5t5.png",
+    "originalSize": 1222569,
+    "compressedSize": 349976,
+    "compressionRatio": 0.2862627794423055,
+    "format": "original",
+    "quality": 75,
+    "downloadUrl": "/api/download/6fc6b229-247d-482a-9852-bfe0c1837e1f",
+    "previewUrl": "/uploads/compressed/6fc6b229-247d-482a-9852-bfe0c1837e1f_compressed_5t5.png",
+    "id": "1775381101017",
+    "timestamp": "2026-04-05T09:25:01.017Z"
+  },
+  {
+    "fileName": "5t5.webp",
+    "originalSize": 118448,
+    "compressedSize": 106232,
+    "compressionRatio": 0.8968661353505336,
+    "format": "original",
+    "quality": 75,
+    "downloadUrl": "/api/download/d4856125-8ab6-4a1d-ad44-f61613c3df65",
+    "previewUrl": "/uploads/compressed/d4856125-8ab6-4a1d-ad44-f61613c3df65_compressed_5t5.webp",
+    "id": "1775381600769",
+    "timestamp": "2026-04-05T09:33:20.769Z"
+  },
+  {
+    "fileName": "5t5.webp",
+    "originalSize": 118448,
+    "compressedSize": 72436,
+    "compressionRatio": 0.6115426178576253,
+    "format": "original",
+    "quality": 50,
+    "downloadUrl": "/api/download/204d1997-849d-42f4-a359-7c3b24dce63d",
+    "previewUrl": "/uploads/compressed/204d1997-849d-42f4-a359-7c3b24dce63d_compressed_5t5.webp",
+    "id": "1775384472232",
+    "timestamp": "2026-04-05T10:21:12.232Z"
   }
 ]

@@ -99,7 +99,7 @@
       :original-size="selectedResult.originalSize"
       :compressed-size="selectedResult.compressedSize"
       :compression-ratio="selectedResult.compressionRatio"
-      :original-name="selectedResult.originalName"
+      :original-name="selectedResult.originalName ?? ''"
     />
 
     <!-- 状态栏 -->
@@ -272,7 +272,7 @@ const handleDownloadResults = () => {
   if (compressionStore.results.length === 1) {
     // 单张下载
     const result = compressionStore.results[0]
-    compressionStore.downloadFile(result.id, `${result.originalName.replace(/\.[^/.]+$/, '')}_compressed.${result.downloadUrl.split('.').pop()}`)
+    compressionStore.downloadFile(result.id, `${result.originalName?.replace(/\.[^/.]+$/, '')}_compressed.${result.downloadUrl.split('.').pop()}`)
   } else {
     // 批量下载
     const ids = compressionStore.results.map(r => r.id)
@@ -296,7 +296,7 @@ const selectResult = (result: CompressionResult) => {
 
 // 下载单个结果
 const downloadSingleResult = (result: CompressionResult) => {
-  compressionStore.downloadFile(result.id, `${result.originalName.replace(/\.[^/.]+$/, '')}_compressed.${result.downloadUrl.split('.').pop()}`)
+  compressionStore.downloadFile(result.id, `${result.originalName?.replace(/\.[^/.]+$/, '')}_compressed.${result.downloadUrl.split('.').pop()}`)
   ElMessage.success('开始下载...')
 }
 
@@ -314,9 +314,31 @@ const saveCompressionSettings = () => {
 // 获取原始图片URL
 const getOriginalImageUrl = (result: CompressionResult) => {
   // 尝试从上传文件中找到对应的原始图片预览
-  const originalFile = uploadStore.files.find(f => f.name === result.originalName)
-  // 如果找不到，返回一个默认的占位符URL
-  return originalFile?.preview || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjQjBCMEIwIj7kuLvluqfliLDliqHpg73kuIDkuK3nqLygkNeQkQo8L3RleHQ+Cjwvc3ZnPg=='
+  // 注意：result.originalName可能是undefined，所以需要额外处理
+  if (result.originalName) {
+    const originalFile = uploadStore.files.find(f => f.name === result.originalName)
+    // 如果找到，返回预览URL
+    if (originalFile?.preview) {
+      console.log('Found original image from upload store:', originalFile.preview.substring(0, 50) + '...')
+      return originalFile.preview
+    }
+  }
+  
+  // 直接使用压缩后的图片作为原始图片的替代
+  // 这样可以确保用户至少能看到图片，即使不是原始版本
+  try {
+    if (result.previewUrl) {
+      const compressedUrl = `http://localhost:3000${result.previewUrl}`
+      console.log('Using compressed image as original image:', compressedUrl)
+      return compressedUrl
+    }
+  } catch (error) {
+    console.error('Error using compressed image:', error)
+  }
+  
+  // 如果所有尝试都失败，返回默认的占位符URL
+  console.log('All attempts failed, returning placeholder')
+  return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjQjBCMEIwIj7kuLvluqfliLDliqHpg73kuIDkuK3nqLygkNeQkQo8L3RleHQ+Cjwvc3ZnPg=='
 }
 
 // 格式化文件大小
