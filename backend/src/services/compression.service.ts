@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import sharp from 'sharp'
 import { v4 as uuidv4 } from 'uuid'
+import historyService from './history.service'
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
 const COMPRESSED_DIR = path.join(UPLOAD_DIR, 'compressed')
@@ -104,9 +105,9 @@ const compressionService = {
       
       const compressedStats = await fs.stat(compressedPath)
       
-      return {
+      const result = {
         id: compressedId,
-        originalName: originalName,
+        fileName: originalName,
         originalSize: originalStats.size,
         compressedSize: compressedStats.size,
         compressionRatio: compressedStats.size / originalStats.size,
@@ -114,6 +115,20 @@ const compressionService = {
         previewUrl: `/uploads/compressed/${compressedName}`,
         compressedPath
       }
+      
+      // 添加到历史记录
+      await historyService.addHistory({
+        fileName: originalName,
+        originalSize: originalStats.size,
+        compressedSize: compressedStats.size,
+        compressionRatio: compressedStats.size / originalStats.size,
+        format: config.format || 'original',
+        quality: config.quality || 75,
+        downloadUrl: `/api/download/${compressedId}`,
+        previewUrl: `/uploads/compressed/${compressedName}`
+      })
+      
+      return result
     } catch (error) {
       console.error('Compression error:', error)
       throw new Error('Failed to compress file')

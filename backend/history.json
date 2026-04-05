@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "fileName": "49febe3cf0a9eac17040ba0b21648449cbe4da0e2e21c-CuCx4u_fw1200.png",
+    "originalSize": 848376,
+    "compressedSize": 214335,
+    "compressionRatio": 0.2526415174403802,
+    "format": "original",
+    "quality": 75,
+    "downloadUrl": "/api/download/0c15b14c-528f-427b-954a-433e514a0a3d",
+    "previewUrl": "/uploads/compressed/0c15b14c-528f-427b-954a-433e514a0a3d_compressed_49febe3cf0a9eac17040ba0b21648449cbe4da0e2e21c-CuCx4u_fw1200.png",
+    "id": "1775363300785",
+    "timestamp": "2026-04-05T04:28:20.785Z"
+  }
+]

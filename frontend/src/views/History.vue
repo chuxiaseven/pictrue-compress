@@ -16,48 +16,69 @@
           <el-option label="WebP" value="webp" />
           <el-option label="全部" value="all" />
         </el-select>
-        <el-button type="info" @click="exportHistory">导出历史</el-button>
-        <el-button type="danger" style="margin-left: 8px" @click="clearAll">清空全部</el-button>
+        <el-button type="info" @click="refreshHistory">刷新</el-button>
+        <el-button type="danger" style="margin-left: 8px" @click="clearAll">清空历史记录</el-button>
       </div>
     </div>
 
-    <!-- 历史记录列表 -->
-    <div class="history-list-section">
-      <el-table v-loading="historyStore.isLoading" :data="filteredHistory" style="width: 100%">
-        <el-table-column prop="timestamp" label="日期时间" width="180">
-          <template #default="scope">{{ formatDate(scope.row.timestamp) }}</template>
-        </el-table-column>
-        <el-table-column prop="fileName" label="文件名" />
-        <el-table-column label="原大小" width="100">
-          <template #default="scope">{{ formatSize(scope.row.originalSize) }}</template>
-        </el-table-column>
-        <el-table-column label="压缩后大小" width="120">
-          <template #default="scope">{{ formatSize(scope.row.compressedSize) }}</template>
-        </el-table-column>
-        <el-table-column label="压缩率" width="90">
-          <template #default="scope">{{ Math.round((1 - scope.row.compressionRatio) * 100) }}%</template>
-        </el-table-column>
-        <el-table-column label="操作" width="80">
-          <template #default="scope">
-            <el-button type="danger" size="small" @click="deleteRecord(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <!-- 历史记录网格 -->
+    <div class="history-grid-section">
+      <div v-loading="historyStore.isLoading" class="history-grid">
+        <div v-for="record in pagedHistory" :key="record.id" class="history-item">
+          <div class="image-preview">
+            <img :src="(record.previewUrl ? 'http://localhost:3000' + record.previewUrl : '/placeholder.png')" :alt="record.fileName" />
+          </div>
+          <div class="image-info">
+            <div class="file-name">{{ record.fileName }}</div>
+            <div class="file-size">{{ formatSize(record.compressedSize) }}</div>
+            <div class="file-actions">
+              <el-button 
+                type="primary" 
+                size="small" 
+                @click="downloadRecord(record)"
+                circle
+              >
+                <el-icon><Download /></el-icon>
+              </el-button>
+              <el-button 
+                type="danger" 
+                size="small" 
+                @click="deleteRecord(record.id)"
+                circle
+              >
+                <el-icon><Delete /></el-icon>
+              </el-button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div v-if="filteredHistory.length === 0 && !historyStore.isLoading" class="empty-list">
         暂无历史记录
       </div>
-    </div>
-
-    <!-- 状态栏 -->
-    <div class="status-bar">
-      <span>共 {{ historyStore.records.length }} 条记录</span>
+      
+      <!-- 分页控件 -->
+      <div v-if="filteredHistory.length > 0" class="pagination-section">
+        <div class="pagination-content">
+          <span class="record-count">共 {{ historyStore.records.length }} 条记录</span>
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[8, 16, 24, 32]"
+            layout="prev, pager, next, sizes"
+            :total="filteredHistory.length"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, ElIcon } from 'element-plus'
+import { Download, Delete } from '@element-plus/icons-vue'
 import { useHistoryStore } from '../store'
 
 const historyStore = useHistoryStore()
@@ -65,13 +86,17 @@ const historyStore = useHistoryStore()
 const searchKeyword = ref('')
 const dateFilter = ref('all')
 const nameFilter = ref('all')
+const currentPage = ref(1)
+const pageSize = ref(10)
+const sortField = ref('timestamp')
+const sortOrder = ref('descending')
 
 onMounted(() => {
   historyStore.loadHistory()
 })
 
 const filteredHistory = computed(() => {
-  return historyStore.records.filter(item => {
+  let result = historyStore.records.filter(item => {
     const matchesKeyword = item.fileName?.toLowerCase().includes(searchKeyword.value.toLowerCase()) ?? true
 
     const now = new Date()
@@ -93,6 +118,40 @@ const filteredHistory = computed(() => {
 
     return matchesKeyword && matchesDate && matchesName
   })
+  
+  // 排序
+  if (sortField.value) {
+    result.sort((a, b) => {
+      let aValue = a[sortField.value as keyof typeof a]
+      let bValue = b[sortField.value as keyof typeof b]
+      
+      // 处理日期类型
+      if (sortField.value === 'timestamp') {
+        aValue = aValue ? new Date(aValue).getTime() : 0
+        bValue = bValue ? new Date(bValue).getTime() : 0
+      }
+      
+      // 处理字符串类型
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        aValue = aValue.toLowerCase()
+        bValue = bValue.toLowerCase()
+      }
+      
+      if (sortOrder.value === 'ascending') {
+        return (aValue || 0) > (bValue || 0) ? 1 : -1
+      } else {
+        return (aValue || 0) < (bValue || 0) ? 1 : -1
+      }
+    })
+  }
+  
+  return result
+})
+
+const pagedHistory = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return filteredHistory.value.slice(start, end)
 })
 
 const formatSize = (bytes: number): string => {
@@ -103,24 +162,52 @@ const formatSize = (bytes: number): string => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-const formatDate = (timestamp: number | string): string => {
-  return new Date(timestamp).toLocaleString('zh-CN')
-}
+
 
 const deleteRecord = async (id: string) => {
   await historyStore.deleteRecord(id)
   ElMessage.success('已删除')
+  // 重新计算分页
+  if (pagedHistory.value.length === 0 && currentPage.value > 1) {
+    currentPage.value--
+  }
 }
 
 const clearAll = async () => {
   await ElMessageBox.confirm('确定清空所有历史记录？', '提示', { type: 'warning' })
   await historyStore.clearAll()
   ElMessage.success('已清空')
+  currentPage.value = 1
 }
 
-const exportHistory = async () => {
-  await historyStore.exportHistory()
-  ElMessage.success('导出成功')
+const refreshHistory = async () => {
+  await historyStore.loadHistory()
+  ElMessage.success('已刷新')
+}
+
+const downloadRecord = async (record: any) => {
+  try {
+    // 模拟下载功能
+    if (record.downloadUrl) {
+      window.open(record.downloadUrl, '_blank')
+      ElMessage.success('下载已开始')
+    } else {
+      ElMessage.error('下载链接不存在')
+    }
+  } catch (error) {
+    ElMessage.error('下载失败')
+  }
+}
+
+
+
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
+  currentPage.value = 1
+}
+
+const handleCurrentChange = (current: number) => {
+  currentPage.value = current
 }
 </script>
 
@@ -146,15 +233,69 @@ const exportHistory = async () => {
   align-items: center;
 }
 
-.history-list-section {
+.history-grid-section {
   margin-bottom: 30px;
 }
 
-.history-list-section h3 {
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #303133;
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.history-item {
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.history-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  background-color: #f5f7fa;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image-preview img:hover {
+  transform: scale(1.05);
+}
+
+.image-info {
+  padding: 10px;
+}
+
+.file-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-size {
+  font-size: 12px;
+  color: #909399;
+  margin-bottom: 10px;
+}
+
+.file-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .empty-list {
@@ -166,18 +307,32 @@ const exportHistory = async () => {
   margin-top: 16px;
 }
 
-.action-buttons {
+.pagination-section {
+  margin-top: 20px;
   display: flex;
-  gap: 16px;
-  margin-bottom: 30px;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #e4e7ed;
 }
 
-.status-bar {
-  border-top: 1px solid #e4e7ed;
-  padding-top: 20px;
+.pagination-content {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+}
+
+.record-count {
   font-size: 14px;
   color: #606266;
+}
+
+.file-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 </style>
